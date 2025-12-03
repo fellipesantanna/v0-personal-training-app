@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/rotinas/layout,_N_T_/rotinas/nova/layout,_N_T_/rotinas/nova/page,_N_T_/rotinas/nova"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/rotinas/nova/__PAGE__",
+    "/rotinas/nova",
+    "/rotinas",
+    "/_index",
+    "/_head"
+  ]
+}

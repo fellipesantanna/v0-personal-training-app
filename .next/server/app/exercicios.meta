@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/exercicios/layout,_N_T_/exercicios/page,_N_T_/exercicios"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/exercicios/__PAGE__",
+    "/exercicios",
+    "/_index",
+    "/_head"
+  ]
+}

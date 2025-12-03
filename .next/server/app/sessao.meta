@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/sessao/layout,_N_T_/sessao/page,_N_T_/sessao"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/sessao/__PAGE__",
+    "/sessao",
+    "/_index",
+    "/_head"
+  ]
+}
