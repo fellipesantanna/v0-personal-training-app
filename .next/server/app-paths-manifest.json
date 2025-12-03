@@ -1,0 +1,20 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/auth/page": "app/auth/page.js",
+  "/auth/register/page": "app/auth/register/page.js",
+  "/configuracoes/page": "app/configuracoes/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/estatisticas/page": "app/estatisticas/page.js",
+  "/exercicios/[id]/editar/page": "app/exercicios/[id]/editar/page.js",
+  "/exercicios/page": "app/exercicios/page.js",
+  "/historico/[id]/page": "app/historico/[id]/page.js",
+  "/historico/page": "app/historico/page.js",
+  "/logout/page": "app/logout/page.js",
+  "/page": "app/page.js",
+  "/rotinas/[id]/page": "app/rotinas/[id]/page.js",
+  "/rotinas/nova/page": "app/rotinas/nova/page.js",
+  "/rotinas/page": "app/rotinas/page.js",
+  "/sessao/page": "app/sessao/page.js"
+}

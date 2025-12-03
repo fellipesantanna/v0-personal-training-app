@@ -1,0 +1,20 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/auth/login/page": "/auth/login",
+  "/auth/page": "/auth",
+  "/auth/register/page": "/auth/register",
+  "/configuracoes/page": "/configuracoes",
+  "/dashboard/page": "/dashboard",
+  "/estatisticas/page": "/estatisticas",
+  "/exercicios/[id]/editar/page": "/exercicios/[id]/editar",
+  "/exercicios/page": "/exercicios",
+  "/historico/[id]/page": "/historico/[id]",
+  "/historico/page": "/historico",
+  "/logout/page": "/logout",
+  "/page": "/",
+  "/rotinas/[id]/page": "/rotinas/[id]",
+  "/rotinas/nova/page": "/rotinas/nova",
+  "/rotinas/page": "/rotinas",
+  "/sessao/page": "/sessao"
+}
