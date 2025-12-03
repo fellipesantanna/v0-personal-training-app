@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { supabase } from "@/lib/supabase" // se o teu client estiver em outro arquivo, ajusta o caminho
+import { createSupabaseBrowserClient } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Loader2, UserPlus2 } from "lucide-react"
@@ -29,10 +29,13 @@ export default function RegisterPage() {
 
     setLoading(true)
 
+    const supabase = createSupabaseBrowserClient()
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
+
 
     setLoading(false)
 

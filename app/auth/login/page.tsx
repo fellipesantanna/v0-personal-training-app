@@ -1,95 +1,75 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { createBrowserSupabase } from "@/lib/supabase/browser"
+import { useRouter } from "next/navigation"
+import { createSupabaseBrowserClient } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Loader2, LogIn } from "lucide-react"
-import { motion } from "framer-motion"
 
 export default function LoginPage() {
   const router = useRouter()
-  const supabase = createBrowserSupabase()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
-  async function handleLogin() {
-    if (!email || !password) {
-      alert("Preencha e-mail e senha.")
-      return
-    }
-
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
     setLoading(true)
+
+    const supabase = createSupabaseBrowserClient()
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    setLoading(false)
-
     if (error) {
-      console.error("Erro no login Supabase:", error)
-      alert(error.message || "Erro ao fazer login.")
+      alert(error.message)
+      setLoading(false)
       return
     }
 
-    console.log("Login OK:", data)
-
-    router.push("/dashboard")
+    router.push("/")
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen flex items-center justify-center p-6"
-    >
-      <div className="w-full max-w-sm rounded-xl border bg-card dark:bg-card/70 shadow p-6 flex flex-col gap-5">
-        <h1 className="text-2xl font-bold text-center">Entrar</h1>
-        <p className="text-muted-foreground text-center text-sm">
-          Acesse sua conta de treino
-        </p>
+    <div className="max-w-md mx-auto mt-20 p-6 border rounded-xl shadow-sm flex flex-col gap-6">
+      <h1 className="text-2xl font-bold text-center">Entrar</h1>
 
-        <div className="flex flex-col gap-3">
-          <Input
-            placeholder="Seu email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        
+        <Input
+          type="email"
+          placeholder="Seu email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-          <Input
-            type="password"
-            placeholder="Sua senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <Input
+          type="password"
+          placeholder="Sua senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-          <Button
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full flex items-center gap-2 bg-purple-600 hover:bg-purple-700 py-5"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <LogIn className="w-5 h-5" />
-            )}
-            Entrar
-          </Button>
-        </div>
-
-        <Button
-          variant="ghost"
-          onClick={() => router.push("/auth/register")}
-          className="text-sm"
-        >
-          Criar nova conta →
+        <Button disabled={loading} className="gap-2 text-lg py-5">
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+          Entrar
         </Button>
-      </div>
-    </motion.div>
+
+      </form>
+
+      <Button
+        variant="ghost"
+        onClick={() => router.push("/auth/register")}
+        className="text-center text-sm"
+      >
+        Criar conta
+      </Button>
+    </div>
   )
 }

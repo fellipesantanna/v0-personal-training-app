@@ -77,7 +77,7 @@ export default function ConfiguracoesPage() {
   async function handleExportCSV() {
     const raw = await sessionsApi.getAll()
     const detailed = []
-    for (const s of raw) detailed.push(await sessionsApi.getById(s.id))
+    for (const s of raw) detailed.push(await sessionsApi.getAll())
 
     exportSessionsToCSV(detailed)
   }

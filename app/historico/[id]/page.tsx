@@ -26,6 +26,7 @@ export default function SessionDetailsPage() {
       try {
         const data = await sessionsApi.getById(id)
         setSession(data)
+        
       } finally {
         setLoading(false)
       }

@@ -21,12 +21,10 @@ import { Grip, X, Plus } from "lucide-react"
 
 import { RoutineExercise, Exercise } from "@/lib/types"
 import { SortableItem } from "./SortableItem"
-import { ExerciseCard } from "../exercises/ExerciseCard"
 import { ExerciseSelector } from "../exercises/ExerciseSelector"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-
 
 interface Props {
   availableExercises: Exercise[]
@@ -63,7 +61,7 @@ export function RoutineExerciseEditor({
     onChange(newList)
   }
 
-  /* ---------------------------- TOGGLE EXERCISE ---------------------------- */
+  /* ---------------------------- ADD / REMOVE ---------------------------- */
 
   function toggleExercise(ex: Exercise) {
     const exists = items.some(i => i.exerciseId === ex.id)
@@ -79,8 +77,10 @@ export function RoutineExerciseEditor({
       id: crypto.randomUUID(),
       exerciseId: ex.id,
       position: items.length,
-      suggestedSets: null,
-      suggestedReps: null,
+
+      // usa sugestões camelCase vindas do mapper
+      suggestedSets: ex.suggestedReps ?? null,
+      suggestedReps: ex.suggestedReps ?? null,
       advancedTechnique: "",
     }
 
@@ -91,7 +91,7 @@ export function RoutineExerciseEditor({
 
   /* -------------------------------- UPDATE -------------------------------- */
 
-  function updateField(id: string, field: string, value: any) {
+  function updateField(id: string, field: keyof RoutineExercise, value: any) {
     const updated = items.map(item =>
       item.id === id ? { ...item, [field]: value } : item
     )
@@ -104,7 +104,7 @@ export function RoutineExerciseEditor({
   return (
     <div className="flex flex-col gap-6">
 
-      {/* SELECTOR HEADER */}
+      {/* HEADER */}
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Exercícios da rotina</h2>
 
@@ -117,7 +117,7 @@ export function RoutineExerciseEditor({
         </Button>
       </div>
 
-      {/* SELECTOR LIST */}
+      {/* SELECTOR */}
       {selectorOpen && (
         <div className="p-4 rounded-xl border bg-card shadow-md">
           <ExerciseSelector
@@ -133,7 +133,7 @@ export function RoutineExerciseEditor({
 
       <Separator />
 
-      {/* LISTA COM DND */}
+      {/* LISTA */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -161,10 +161,10 @@ export function RoutineExerciseEditor({
                       <Grip className="w-4 h-4 text-muted-foreground" />
 
                       <div className="flex-1">
-                        <ExerciseCard
-                          name={ex.name}
-                          category={ex.category}
-                        />
+                        <p className="font-semibold">{ex.name}</p>
+                        <p className="text-xs text-muted-foreground capitalize">
+                          {ex.category.replace("_", " ")}
+                        </p>
                       </div>
 
                       <Button
@@ -176,41 +176,13 @@ export function RoutineExerciseEditor({
                       </Button>
                     </div>
 
-                    {/* CAMPOS */}
+                    {/* CAMPOS VARIÁVEIS */}
                     <div className="grid grid-cols-3 gap-4 mt-4">
 
-                      {/* SETS */}
-                      <div className="flex flex-col gap-1">
+                      {/* ✳ PARA TODAS AS CATEGORIAS: técnica avançada */}
+                      <div className="flex flex-col gap-1 col-span-3">
                         <label className="text-sm text-muted-foreground">
-                          Sets sugeridos
-                        </label>
-                        <Input
-                          type="number"
-                          value={item.suggestedSets ?? ""}
-                          onChange={(e) =>
-                            updateField(item.id, "suggestedSets", Number(e.target.value))
-                          }
-                        />
-                      </div>
-
-                      {/* REPS */}
-                      <div className="flex flex-col gap-1">
-                        <label className="text-sm text-muted-foreground">
-                          Reps sugeridas
-                        </label>
-                        <Input
-                          type="number"
-                          value={item.suggestedReps ?? ""}
-                          onChange={(e) =>
-                            updateField(item.id, "suggestedReps", Number(e.target.value))
-                          }
-                        />
-                      </div>
-
-                      {/* ADVANCED TECHNIQUE */}
-                      <div className="flex flex-col gap-1 col-span-1">
-                        <label className="text-sm text-muted-foreground">
-                          Técnica avançada
+                          Técnica avançada (opcional)
                         </label>
                         <Input
                           placeholder="Ex: Drop-set, Rest-pause..."
@@ -220,6 +192,96 @@ export function RoutineExerciseEditor({
                           }
                         />
                       </div>
+
+                      {/* ================== PESO + REPS ================== */}
+                      {ex.category === "peso_reps" && (
+                        <>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-sm text-muted-foreground">
+                              Repetições
+                            </label>
+                            <Input
+                              type="number"
+                              value={item.suggestedReps ?? ""}
+                              onChange={(e) =>
+                                updateField(item.id, "suggestedReps", Number(e.target.value))
+                              }
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label className="text-sm text-muted-foreground">
+                              Carga (kg)
+                            </label>
+                            <Input
+                              type="number"
+                              value={ex.suggestedWeight ?? ""}
+                              disabled
+                              className="opacity-50"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      {/* ================== CORPO LIVRE ================== */}
+                      {ex.category === "corpo_livre" && (
+                        <div className="flex flex-col gap-1 col-span-3">
+                          <label className="text-sm text-muted-foreground">
+                            Repetições
+                          </label>
+                          <Input
+                            type="number"
+                            value={item.suggestedReps ?? ""}
+                            onChange={(e) =>
+                              updateField(item.id, "suggestedReps", Number(e.target.value))
+                            }
+                          />
+                        </div>
+                      )}
+
+                      {/* ================== DURAÇÃO ================== */}
+                      {ex.category === "duracao" && (
+                        <div className="flex flex-col gap-1 col-span-3">
+                          <label className="text-sm text-muted-foreground">
+                            Tempo (segundos)
+                          </label>
+                          <Input
+                            type="number"
+                            value={ex.suggestedTime ?? ""}
+                            disabled
+                            className="opacity-50"
+                          />
+                        </div>
+                      )}
+
+                      {/* ========== DISTÂNCIA + DURAÇÃO ========== */}
+                      {ex.category === "distancia_duracao" && (
+                        <>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-sm text-muted-foreground">
+                              Distância (m)
+                            </label>
+                            <Input
+                              type="number"
+                              value={ex.suggestedDistance ?? ""}
+                              disabled
+                              className="opacity-50"
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <label className="text-sm text-muted-foreground">
+                              Tempo (segundos)
+                            </label>
+                            <Input
+                              type="number"
+                              value={ex.suggestedTime ?? ""}
+                              disabled
+                              className="opacity-50"
+                            />
+                          </div>
+                        </>
+                      )}
 
                     </div>
 

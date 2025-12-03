@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/llipe/OneDrive/%C3%81rea%20de%20Trabalho/projeto-fit-track/v0-personal-training-app/app/rotinas/page.tsx"],"sourcesContent":["import { redirect } from \"next/navigation\"\r\n\r\nexport default function RotinasIndexRedirect() {\r\n  redirect(\"/dashboard\")\r\n}\n"],"names":[],"mappings":";;;;AAAA;AAAA;;AAEe,SAAS;IACtB,IAAA,iMAAQ,EAAC;AACX"}}]
+}

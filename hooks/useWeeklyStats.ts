@@ -87,7 +87,7 @@ export function useWeeklyStats(): WeeklyStatsResult {
     async function load() {
       setLoading(true)
       try {
-        const list = await sessionsApi.getAllDetailed()
+        const list = await sessionsApi.getAll()
         setSessions(list)
 
         computeStats(list)

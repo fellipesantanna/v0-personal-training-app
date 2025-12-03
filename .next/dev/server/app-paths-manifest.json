@@ -1,4 +1,5 @@
 {
   "/dashboard/page": "app/dashboard/page.js",
-  "/historico/page": "app/historico/page.js"
+  "/rotinas/nova/page": "app/rotinas/nova/page.js",
+  "/rotinas/page": "app/rotinas/page.js"
 }

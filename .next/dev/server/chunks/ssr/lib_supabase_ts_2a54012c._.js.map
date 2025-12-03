@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/llipe/OneDrive/%C3%81rea%20de%20Trabalho/projeto-fit-track/v0-personal-training-app/lib/supabase.ts"],"sourcesContent":["\"use client\";\r\n\r\nimport { createBrowserClient } from \"@supabase/ssr\";\r\n\r\nexport function createSupabaseBrowserClient() {\r\n  return createBrowserClient(\r\n    process.env.NEXT_PUBLIC_SUPABASE_URL!,\r\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\r\n  );\r\n}\r\n\r\nexport const supabase = createSupabaseBrowserClient();\r\n"],"names":[],"mappings":";;;;;;AAEA;AAAA;AAFA;;AAIO,SAAS;IACd,OAAO,IAAA,iMAAmB;AAI5B;AAEO,MAAM,WAAW"}}]
+}

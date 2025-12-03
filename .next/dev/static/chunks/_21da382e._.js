@@ -3,13 +3,20 @@
 "use strict";
 
 __turbopack_context__.s([
+    "createSupabaseBrowserClient",
+    ()=>createSupabaseBrowserClient,
     "supabase",
     ()=>supabase
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$module$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/module/index.js [app-client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$ssr$2f$dist$2f$module$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/ssr/dist/module/index.js [app-client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$ssr$2f$dist$2f$module$2f$createBrowserClient$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@supabase/ssr/dist/module/createBrowserClient.js [app-client] (ecmascript)");
+"use client";
 ;
-const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$module$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(("TURBOPACK compile-time value", "https://axreigchbfreakpofgxr.supabase.co"), ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4cmVpZ2NoYmZyZWFrcG9mZ3hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MTIyODcsImV4cCI6MjA4MDE4ODI4N30.bdtlEaPVyFwa6FkGgv6TG8SxUTZgD6VpdwrEmv6lW-Q"));
+function createSupabaseBrowserClient() {
+    return (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$ssr$2f$dist$2f$module$2f$createBrowserClient$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createBrowserClient"])(("TURBOPACK compile-time value", "https://axreigchbfreakpofgxr.supabase.co"), ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4cmVpZ2NoYmZyZWFrcG9mZ3hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2MTIyODcsImV4cCI6MjA4MDE4ODI4N30.bdtlEaPVyFwa6FkGgv6TG8SxUTZgD6VpdwrEmv6lW-Q"));
+}
+const supabase = createSupabaseBrowserClient();
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -17,6 +24,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 "[project]/lib/mappers/session.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+// lib/mappers/session.ts
 __turbopack_context__.s([
     "mapDbSession",
     ()=>mapDbSession
@@ -25,9 +33,9 @@ function mapDbSession(db) {
     return {
         id: db.id,
         routineId: db.routine_id,
-        routineName: db.routine_name,
-        startedAt: new Date(db.started_at),
-        finishedAt: new Date(db.finished_at),
+        routineName: db.routine_name ?? "",
+        startedAt: db.started_at ? new Date(db.started_at) : new Date(),
+        finishedAt: db.finished_at ? new Date(db.finished_at) : new Date(),
         exercises: (db.session_exercises ?? []).map((ex)=>({
                 id: ex.id,
                 exerciseId: ex.exercise_id,
@@ -37,10 +45,10 @@ function mapDbSession(db) {
                 sets: (ex.sets ?? []).map((s)=>({
                         id: s.id,
                         setIndex: s.set_index,
-                        reps: s.reps ?? undefined,
-                        weightKg: s.weight_kg ?? undefined,
-                        durationSec: s.duration_sec ?? undefined,
-                        distanceM: s.distance_m ?? undefined
+                        reps: s.reps ?? null,
+                        weightKg: s.weight_kg ?? null,
+                        durationSec: s.duration_sec ?? null,
+                        distanceM: s.distance_m ?? null
                     }))
             }))
     };
@@ -52,6 +60,7 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 "[project]/lib/api/session.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+// lib/api/session.ts
 __turbopack_context__.s([
     "sessionsApi",
     ()=>sessionsApi
@@ -61,61 +70,129 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mappers$2f$session$2e
 ;
 ;
 const sessionsApi = {
-    /** ============================================================================
-   * GET ALL SESSIONS FROM USER
-   ============================================================================ */ async getAll () {
-        const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sessions").select("*").order("created_at", {
+    /** -------------------------------------------------------------------------
+   * GET ALL SESSIONS (mais recentes primeiro)
+   ------------------------------------------------------------------------- */ async getAll () {
+        const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sessions").select(`
+        id,
+        routine_id,
+        routine_name,
+        started_at,
+        finished_at,
+        session_exercises (
+          id,
+          exercise_id,
+          exercise_name,
+          category,
+          position,
+          sets (
+            id,
+            set_index,
+            reps,
+            weight_kg,
+            duration_sec,
+            distance_m
+          )
+        )
+      `).order("started_at", {
             ascending: false
         });
         if (error) throw error;
-        return data;
+        return data.map(__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mappers$2f$session$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["mapDbSession"]);
     },
-    /** ============================================================================
-   * GET SESSION BY ID (with exercises + sets)
-   ============================================================================ */ async getById (id) {
+    /** -------------------------------------------------------------------------
+   * GET SESSION BY ID (histórico/[id])
+   ------------------------------------------------------------------------- */ async getById (id) {
         const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sessions").select(`
-        *,
+        id,
+        routine_id,
+        routine_name,
+        started_at,
+        finished_at,
         session_exercises (
-          *,
-          sets(*)
+          id,
+          exercise_id,
+          exercise_name,
+          category,
+          position,
+          sets (
+            id,
+            set_index,
+            reps,
+            weight_kg,
+            duration_sec,
+            distance_m
+          )
         )
       `).eq("id", id).single();
         if (error) throw error;
         return (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mappers$2f$session$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["mapDbSession"])(data);
     },
-    /** ============================================================================
-   * CREATE A SESSION (PR3 — COM TODOS EXERCÍCIOS E SETS)
-   ============================================================================ */ async create (dto) {
-        // 1) Criar sessão
-        const { data: session, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sessions").insert({
-            routine_id: dto.routineId,
-            routine_name: dto.routineName,
-            started_at: dto.startedAt.toISOString(),
-            finished_at: dto.finishedAt.toISOString()
-        }).select().single();
+    /** -------------------------------------------------------------------------
+   * GET LAST SESSION OF A ROUTINE (para reuso da rotina)
+   ------------------------------------------------------------------------- */ async getLastOfRoutine (routineId) {
+        const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sessions").select(`
+        id,
+        routine_id,
+        routine_name,
+        started_at,
+        finished_at,
+        session_exercises (
+          id,
+          exercise_id,
+          exercise_name,
+          category,
+          position,
+          sets (
+            id,
+            set_index,
+            reps,
+            weight_kg,
+            duration_sec,
+            distance_m
+          )
+        )
+      `).eq("routine_id", routineId).order("started_at", {
+            ascending: false
+        }).limit(1).maybeSingle();
         if (error) throw error;
-        // 2) Inserir exercícios da sessão
+        if (!data) return null;
+        return (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$mappers$2f$session$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["mapDbSession"])(data);
+    },
+    /** -------------------------------------------------------------------------
+   * CREATE SESSION
+   ------------------------------------------------------------------------- */ async create (dto) {
+        // 1) cria sessão
+        const { data: session, error: sessionErr } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sessions").insert({
+            routine_id: dto.routineId,
+            routine_name: dto.routineName ?? null,
+            notes: dto.notes ?? null,
+            started_at: dto.sessionDate ?? new Date(),
+            finished_at: new Date()
+        }).select("*").single();
+        if (sessionErr) throw sessionErr;
+        // 2) cria exercises dentro da sessão
         for (const ex of dto.exercises){
-            const { data: dbEx, error: exErr } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("session_exercises").insert({
+            const { data: exRow, error: exErr } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("session_exercises").insert({
                 session_id: session.id,
                 exercise_id: ex.exerciseId,
+                exercise_name: null,
+                category: null,
                 position: ex.position
-            }).select().single();
+            }).select("*").single();
             if (exErr) throw exErr;
-            // 3) Inserir sets de cada exercício
-            for (const set of ex.sets){
-                const { error: setErr } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sets").insert({
-                    session_exercise_id: dbEx.id,
-                    set_index: set.setIndex,
-                    reps: set.reps ?? null,
-                    weight_kg: set.weightKg ?? null,
-                    duration_sec: set.durationSec ?? null,
-                    distance_m: set.distanceM ?? null
-                });
-                if (setErr) throw setErr;
-            }
+            const setsPayload = ex.sets.map((s)=>({
+                    session_exercise_id: exRow.id,
+                    set_index: s.setIndex,
+                    reps: s.reps ?? null,
+                    weight_kg: s.weightKg ?? null,
+                    duration_sec: s.durationSec ?? null,
+                    distance_m: s.distanceM ?? null
+                }));
+            const { error: setsErr } = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("sets").insert(setsPayload);
+            if (setsErr) throw setsErr;
         }
-        return session.id;
+        return true;
     }
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
@@ -227,10 +304,8 @@ function HistoricoPage() {
         try {
             const base = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2f$session$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["sessionsApi"].getAll();
             const detailed = [];
-            for (const s of base){
-                detailed.push(await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2f$session$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["sessionsApi"].getById(s.id));
-            }
-            setList(detailed);
+            const data = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2f$session$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["sessionsApi"].getAll();
+            setList(data);
         } finally{
             setLoading(false);
         }
@@ -258,12 +333,12 @@ function HistoricoPage() {
                 className: "animate-spin w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full"
             }, void 0, false, {
                 fileName: "[project]/app/historico/page.tsx",
-                lineNumber: 99,
+                lineNumber: 97,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/historico/page.tsx",
-            lineNumber: 98,
+            lineNumber: 96,
             columnNumber: 7
         }, this);
     }
@@ -288,7 +363,7 @@ function HistoricoPage() {
                         children: "Histórico"
                     }, void 0, false, {
                         fileName: "[project]/app/historico/page.tsx",
-                        lineNumber: 112,
+                        lineNumber: 110,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -296,18 +371,18 @@ function HistoricoPage() {
                         children: "Veja seus treinos organizados por semana"
                     }, void 0, false, {
                         fileName: "[project]/app/historico/page.tsx",
-                        lineNumber: 113,
+                        lineNumber: 111,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/historico/page.tsx",
-                lineNumber: 111,
+                lineNumber: 109,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                 fileName: "[project]/app/historico/page.tsx",
-                lineNumber: 118,
+                lineNumber: 116,
                 columnNumber: 7
             }, this),
             sortedWeeks.map((weekKey)=>{
@@ -333,7 +408,7 @@ function HistoricoPage() {
                             children: title
                         }, void 0, false, {
                             fileName: "[project]/app/historico/page.tsx",
-                            lineNumber: 136,
+                            lineNumber: 134,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -359,12 +434,12 @@ function HistoricoPage() {
                                                         className: "w-6 h-6 text-purple-700 dark:text-purple-300"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/historico/page.tsx",
-                                                        lineNumber: 160,
+                                                        lineNumber: 158,
                                                         columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/historico/page.tsx",
-                                                    lineNumber: 159,
+                                                    lineNumber: 157,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -375,7 +450,7 @@ function HistoricoPage() {
                                                             children: s.routineName
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/historico/page.tsx",
-                                                            lineNumber: 164,
+                                                            lineNumber: 162,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -388,19 +463,19 @@ function HistoricoPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/historico/page.tsx",
-                                                            lineNumber: 168,
+                                                            lineNumber: 166,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/historico/page.tsx",
-                                                    lineNumber: 163,
+                                                    lineNumber: 161,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/historico/page.tsx",
-                                            lineNumber: 157,
+                                            lineNumber: 155,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -413,7 +488,7 @@ function HistoricoPage() {
                                                             className: "w-4 h-4"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/historico/page.tsx",
-                                                            lineNumber: 176,
+                                                            lineNumber: 174,
                                                             columnNumber: 25
                                                         }, this),
                                                         totalTimeMin,
@@ -421,50 +496,50 @@ function HistoricoPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/historico/page.tsx",
-                                                    lineNumber: 175,
+                                                    lineNumber: 173,
                                                     columnNumber: 23
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowRight$3e$__["ArrowRight"], {
                                                     className: "w-5 h-5 text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/historico/page.tsx",
-                                                    lineNumber: 180,
+                                                    lineNumber: 178,
                                                     columnNumber: 23
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/historico/page.tsx",
-                                            lineNumber: 174,
+                                            lineNumber: 172,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, s.id, true, {
                                     fileName: "[project]/app/historico/page.tsx",
-                                    lineNumber: 146,
+                                    lineNumber: 144,
                                     columnNumber: 19
                                 }, this);
                             })
                         }, void 0, false, {
                             fileName: "[project]/app/historico/page.tsx",
-                            lineNumber: 139,
+                            lineNumber: 137,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                             fileName: "[project]/app/historico/page.tsx",
-                            lineNumber: 187,
+                            lineNumber: 185,
                             columnNumber: 13
                         }, this)
                     ]
                 }, weekKey, true, {
                     fileName: "[project]/app/historico/page.tsx",
-                    lineNumber: 129,
+                    lineNumber: 127,
                     columnNumber: 11
                 }, this);
             })
         ]
     }, void 0, true, {
         fileName: "[project]/app/historico/page.tsx",
-        lineNumber: 105,
+        lineNumber: 103,
         columnNumber: 5
     }, this);
 }

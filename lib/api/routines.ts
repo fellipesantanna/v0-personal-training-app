@@ -1,14 +1,25 @@
-import { supabase } from "@/lib/supabase"
-import { CreateRoutineDto } from "@/lib/types"
-import { mapDbRoutine } from "@/lib/mappers/routine"
+import { supabase } from "@/lib/supabase";
+import { mapDbRoutine, toDbRoutinePayload } from "@/lib/mappers/routine";
 
 export const routinesApi = {
-  async getAll(userId: string) {
+  async getAll() {
     const { data, error } = await supabase
       .from("routines")
-      .select("*, routine_exercises(*)")
-      .eq("user_id", userId)
-      .order("created_at")
+      .select(`
+      id,
+      name,
+      created_at,
+      user_id,
+      routine_exercises (
+        id,
+        exercise_id,
+        position,
+        suggested_sets,
+        suggested_reps,
+        advanced_technique
+      )
+    `)
+      .order("created_at", { ascending: false })
 
     if (error) throw error
     return data.map(mapDbRoutine)
@@ -17,7 +28,20 @@ export const routinesApi = {
   async getById(id: string) {
     const { data, error } = await supabase
       .from("routines")
-      .select("*, routine_exercises(*)")
+      .select(`
+      id,
+      name,
+      created_at,
+      user_id,
+      routine_exercises (
+        id,
+        exercise_id,
+        position,
+        suggested_sets,
+        suggested_reps,
+        advanced_technique
+      )
+    `)
       .eq("id", id)
       .single()
 
@@ -25,41 +49,22 @@ export const routinesApi = {
     return mapDbRoutine(data)
   },
 
-  async create(dto: CreateRoutineDto, userId: string) {
-    const { data: routine, error } = await supabase
+  async create(input: any) {
+    const payload = toDbRoutinePayload(input);
+
+    const { data, error } = await supabase
       .from("routines")
-      .insert({
-        name: dto.name,
-        user_id: userId
-      })
-      .select()
-      .single()
+      .insert(payload)
+      .select(`
+        id,
+        name,
+        created_at,
+        user_id,
+        exercises:routine_exercises (*)
+      `)
+      .single();
 
-    if (error) throw error
-
-    for (const ex of dto.exercises) {
-      await supabase.from("routine_exercises").insert({
-        routine_id: routine.id,
-        exercise_id: ex.exerciseId,
-        position: ex.position,
-        suggested_sets: ex.suggestedSets,
-        suggested_reps: ex.suggestedReps,
-        advanced_technique: ex.advancedTechnique,
-      })
-    }
-
-    return mapDbRoutine({
-      ...routine,
-      routine_exercises: dto.exercises,
-    })
-  },
-
-  async delete(id: string) {
-    const { error } = await supabase
-      .from("routines")
-      .delete()
-      .eq("id", id)
-
-    if (error) throw error
+    if (error) throw error;
+    return mapDbRoutine(data);
   }
-}
+};

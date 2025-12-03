@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react"
 import { exercisesApi } from "@/lib/api/exercise"
 import { Exercise } from "@/lib/types"
-import { createBrowserSupabase } from "@/lib/supabase/browser"
+import { supabase } from "@/lib/supabase"
 
 export default function ExercisesPage() {
-  const supabase = createBrowserSupabase()
 
   const [list, setList] = useState<Exercise[]>([])
 
@@ -21,7 +20,7 @@ export default function ExercisesPage() {
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser()
-    const data = await exercisesApi.getAll(user!.id)
+    const data = await exercisesApi.getAll()
     setList(data)
   }
 
@@ -38,8 +37,9 @@ export default function ExercisesPage() {
       suggestedReps: reps,
       suggestedWeight: weight,
       suggestedTime: time,
-      suggestedDistance: distance
-    }, user!.id)
+      suggestedDistance: distance,
+      userId: user!.id
+    }),
 
     setName("")
     setReps(null)

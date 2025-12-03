@@ -34,15 +34,11 @@ export default function SessaoPage() {
 
   const [sessionStartTimestamp] = useState(Date.now())
 
-  /** ----------------------------------------------------------------------------
-   * PR3 — Função para montar sets iniciais
-  ---------------------------------------------------------------------------- */
   function buildInitialSets(
     category: ExerciseCategory,
     suggestedSets?: number | null,
     suggestedReps?: number | null
   ): WorkoutSet[] {
-
     const totalSets = suggestedSets ?? 0
     const reps = suggestedReps ?? 10
 
@@ -62,15 +58,14 @@ export default function SessaoPage() {
     return list
   }
 
-  /** ----------------------------------------------------------------------------
-   * PR3 — Misturar sugestões + último treino
-  ---------------------------------------------------------------------------- */
+  // ------------------------------------------------------------------------
+  // Mesclar sets novos + última sessão
+  // ------------------------------------------------------------------------
   function mergeWithLastSession(
     exerciseId: string,
     baseSets: WorkoutSet[],
     last: Session | null
   ): WorkoutSet[] {
-
     if (!last) return baseSets
 
     const lastEx = last.exercises.find(e => e.exerciseId === exerciseId)
@@ -78,7 +73,6 @@ export default function SessaoPage() {
 
     if (lastEx.sets.length === 0) return baseSets
 
-    // usa o último treino
     return lastEx.sets.map((set, idx) => ({
       id: crypto.randomUUID(),
       setIndex: idx,
@@ -89,9 +83,9 @@ export default function SessaoPage() {
     }))
   }
 
-  /** ----------------------------------------------------------------------------
-   * Carregar dados
-  ---------------------------------------------------------------------------- */
+  // ------------------------------------------------------------------------
+  // Load routine + exercises + last session
+  // ------------------------------------------------------------------------
   useEffect(() => {
     if (!routineId) {
       router.push("/rotinas")
@@ -99,8 +93,9 @@ export default function SessaoPage() {
     }
 
     async function load() {
-      setLoading(true)
       try {
+        setLoading(true)
+
         const [routineData, allExercises] = await Promise.all([
           routinesApi.getById(routineId),
           exercisesApi.getAll()
@@ -109,14 +104,10 @@ export default function SessaoPage() {
         setRoutine(routineData)
         setExercises(allExercises)
 
-        // carregar sessões anteriores (pegar a mais recente)
-        const sessions = await sessionsApi.getAll()
-        const previous = sessions
-          .filter(s => s.routine_id === routineId) as any
+        // NOVO: PUXA APENAS A ÚLTIMA SESSÃO CORRETA
+        const last = await sessionsApi.getLastOfRoutine(routineId)
+        setLastSession(last)
 
-        setLastSession(previous.length > 0 ? previous[0] : null)
-
-        // montar state da sessão
         const prepared: SessionExercise[] = routineData.exercises.map((re, idx) => {
           const ex = allExercises.find(e => e.id === re.exerciseId)
 
@@ -129,7 +120,7 @@ export default function SessaoPage() {
           const finalSets = mergeWithLastSession(
             re.exerciseId,
             baseSets,
-            previous[0] ?? null
+            last
           )
 
           return {
@@ -155,26 +146,25 @@ export default function SessaoPage() {
     load()
   }, [routineId])
 
-  /** ----------------------------------------------------------------------------
-   * Atualizar sets
-  ---------------------------------------------------------------------------- */
+  // ------------------------------------------------------------------------
+  // UPDATE SETS
+  // ------------------------------------------------------------------------
   function updateExerciseSets(exerciseId: string, sets: WorkoutSet[]) {
     setSessionExercises(prev =>
       prev.map(se => se.exerciseId === exerciseId ? { ...se, sets } : se)
     )
   }
 
-  /** ----------------------------------------------------------------------------
-   * Salvar sessão
-  ---------------------------------------------------------------------------- */
+  // ------------------------------------------------------------------------
+  // SAVE
+  // ------------------------------------------------------------------------
   async function saveSession() {
     setSaving(true)
     try {
       await sessionsApi.create({
         routineId: routineId!,
         routineName: routine?.name ?? "Treino",
-        startedAt: new Date(sessionStartTimestamp),
-        finishedAt: new Date(),
+        sessionDate: new Date(sessionStartTimestamp),
         exercises: sessionExercises.map(se => ({
           exerciseId: se.exerciseId,
           position: se.position,
@@ -191,10 +181,9 @@ export default function SessaoPage() {
     }
   }
 
-  /** ----------------------------------------------------------------------------
-   * UI
-  ---------------------------------------------------------------------------- */
-
+  // ------------------------------------------------------------------------
+  // UI
+  // ------------------------------------------------------------------------
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
@@ -253,7 +242,7 @@ export default function SessaoPage() {
 
       <Separator />
 
-      {/* BOTÃO SALVAR */}
+      {/* SAVE BUTTON */}
       <Button
         onClick={saveSession}
         disabled={saving}

@@ -60,11 +60,9 @@ export default function HistoricoPage() {
       const base = await sessionsApi.getAll()
       const detailed: Session[] = []
 
-      for (const s of base) {
-        detailed.push(await sessionsApi.getById(s.id))
-      }
-
-      setList(detailed)
+      const data = await sessionsApi.getAll()
+      setList(data)
+      
     } finally {
       setLoading(false)
     }

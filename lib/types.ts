@@ -2,10 +2,10 @@
 // Categorias de exercício
 // =========================
 export type ExerciseCategory =
-  | "weight-reps"
-  | "bodyweight-reps"
-  | "duration"
-  | "distance-duration"
+  | "peso_reps"
+  | "corpo_livre"
+  | "duracao"
+  | "distancia_duracao";
 
 export interface Exercise {
   id: string

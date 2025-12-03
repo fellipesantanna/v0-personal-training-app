@@ -5,7 +5,10 @@ import { sessionsApi } from "@/lib/api/session"
 import { Session } from "@/lib/types"
 import { StatCard } from "@/components/stats/StatCard"
 import { motion } from "framer-motion"
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts"
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  LineChart, Line
+} from "recharts"
 import { Dumbbell, Gauge, Timer, Hash } from "lucide-react"
 
 // ================================
@@ -15,7 +18,7 @@ function startOfWeek(date: Date) {
   const d = new Date(date)
   const day = d.getDay() === 0 ? 7 : d.getDay() // domingo = 7
   d.setHours(0, 0, 0, 0)
-  d.setDate(d.getDate() - (day - 1)) // segunda-feira
+  d.setDate(d.getDate() - (day - 1))
   return d
 }
 
@@ -28,6 +31,12 @@ function endOfWeek(date: Date) {
 
 function isWithinRange(date: Date, start: Date, end: Date) {
   return date >= start && date <= end
+}
+
+function startOfDay(d: Date) {
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
+  return x
 }
 
 // ================================
@@ -82,48 +91,53 @@ export default function StatsPage() {
     async function load() {
       setLoading(true)
 
+      // ======================================
       // 1) pegar sessões completas
+      // ======================================
       const all = await sessionsApi.getAll()
-      const detailed: Session[] = []
-      for (const s of all) {
-        detailed.push(await sessionsApi.getById(s.id))
-      }
+      setSessions(all)
 
-      setSessions(detailed)
-
+      // ======================================
       // 2) calcular semanas
+      // ======================================
       const today = new Date()
       const currStart = startOfWeek(today)
       const currEnd = endOfWeek(today)
 
       const prevStart = new Date(currStart)
       prevStart.setDate(prevStart.getDate() - 7)
+
       const prevEnd = new Date(currEnd)
       prevEnd.setDate(prevEnd.getDate() - 7)
 
-      const currSessions = detailed.filter(s =>
+      const currSessions = all.filter(s =>
         isWithinRange(new Date(s.startedAt), currStart, currEnd)
       )
 
-      const prevSessions = detailed.filter(s =>
+      const prevSessions = all.filter(s =>
         isWithinRange(new Date(s.startedAt), prevStart, prevEnd)
       )
 
+      // ======================================
       // 3) stats
+      // ======================================
       const curr = computeStats(currSessions)
       const prev = computeStats(prevSessions)
 
       setCurrentStats(curr)
       setPrevStats(prev)
 
+      // ======================================
       // 4) gráfico diário simples
-      const chart = []
+      // ======================================
+      const chart: any[] = []
+
       for (let i = 0; i < 7; i++) {
         const d = new Date(currStart)
         d.setDate(currStart.getDate() + i)
 
         const daySessions = currSessions.filter(s =>
-          startOfDay(s.startedAt).toDateString() === d.toDateString()
+          startOfDay(new Date(s.startedAt)).toDateString() === d.toDateString()
         )
 
         let vol = 0
@@ -144,21 +158,13 @@ export default function StatsPage() {
       }
 
       setChartData(chart)
-
       setLoading(false)
-    }
-
-    function startOfDay(d: Date) {
-      const x = new Date(d)
-      x.setHours(0, 0, 0, 0)
-      return x
     }
 
     load()
   }, [])
 
   if (loading) return <div className="p-6 text-center">Carregando...</div>
-
   if (!currentStats) return <div className="p-6">Sem dados ainda.</div>
 
   const pct = (a: number, b: number) =>

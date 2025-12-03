@@ -1,18 +1,18 @@
-import { cookies } from "next/headers"
-import { createServerClient as createSupabaseServer } from "@supabase/ssr"
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 
-export async function createServerClient() {
-  const cookieStore = await cookies()
+export async function createSupabaseServerClient() {
+  const cookieStore = await cookies(); // 👈 AGORA FUNCIONA
 
-  return createSupabaseServer(
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value
+          return cookieStore.get(name)?.value;
         },
       },
     }
-  )
+  );
 }

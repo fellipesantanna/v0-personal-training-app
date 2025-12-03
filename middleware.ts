@@ -1,55 +1,31 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
-import { createServerClient } from "@supabase/ssr"
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next({
-    request: {
-      headers: req.headers,
-    },
-  })
+export function middleware(req: NextRequest) {
+  const url = req.nextUrl.clone();
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: any) {
-          res.cookies.set(name, value, options)
-        },
-        remove(name: string, options: any) {
-          res.cookies.delete(name, options)
-        },
-      },
-    }
-  )
+  // pega QUALQUER cookie do Supabase
+  const supabaseCookie = Array.from(req.cookies.getAll())
+    .find((c) => c.name.includes("auth-token"));
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const isLogged = !!supabaseCookie;
 
-  const url = req.nextUrl.pathname
-  const publicRoutes = ["/auth/login", "/auth/register"]
+  const publicRoutes = ["/auth/login", "/auth/register"];
+  const isPublic = publicRoutes.includes(url.pathname);
 
-  // not logged in → redirect to login
-  if (!user && !publicRoutes.includes(url)) {
-    return NextResponse.redirect(new URL("/auth/login", req.url))
+  if (!isLogged && !isPublic) {
+    url.pathname = "/auth/login";
+    return NextResponse.redirect(url);
   }
 
-  // logged in but visiting login/register → redirect to home
-  if (user && publicRoutes.includes(url)) {
-    return NextResponse.redirect(new URL("/", req.url))
+  if (isLogged && isPublic) {
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
 
-  return res
+  return NextResponse.next();
 }
-
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|public).*)",
-  ],
-}
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.svg).*)"],
+};

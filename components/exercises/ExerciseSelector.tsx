@@ -1,74 +1,108 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Exercise } from "@/lib/types"
-import { ExerciseCard } from "./ExerciseCard"
+import { CreateExerciseModal } from "./CreateExerciseModal"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-interface ExerciseSelectorProps {
+interface Props {
   exercises: Exercise[]
   selected: string[]
-  onToggle: (id: string) => void
+  onToggle: (exerciseId: string) => void
 }
 
-const categories = [
-  { id: "all", label: "Todos" },
-  { id: "weight-reps", label: "Peso + Reps" },
-  { id: "bodyweight-reps", label: "Corpo Livre" },
-  { id: "duration", label: "Duração" },
-  { id: "distance-duration", label: "Distância + Duração" },
-]
-
-export function ExerciseSelector({
-  exercises,
-  selected,
-  onToggle
-}: ExerciseSelectorProps) {
-
+export function ExerciseSelector({ exercises, selected, onToggle }: Props) {
   const [query, setQuery] = useState("")
-  const [category, setCategory] = useState("all")
+  const [createOpen, setCreateOpen] = useState(false)
 
-  const filtered = useMemo(() => {
-    return exercises.filter(e => {
-      if (category !== "all" && e.category !== category) return false
-      if (!e.name.toLowerCase().includes(query.toLowerCase())) return false
-      return true
-    })
-  }, [exercises, query, category])
+  const categories = [
+    { key: "all", label: "Todos" },
+    { key: "peso_reps", label: "Peso + Reps" },
+    { key: "corpo_livre", label: "Corpo Livre" },
+    { key: "duracao", label: "Duração" },
+    { key: "distancia_duracao", label: "Distância + Duração" },
+  ]
+
+  const [activeCategory, setActiveCategory] = useState("all")
+
+  const filtered = exercises.filter((ex) => {
+    const matchesQuery =
+      ex.name.toLowerCase().includes(query.toLowerCase())
+
+    const matchesCategory =
+      activeCategory === "all" || ex.category === activeCategory
+
+    return matchesQuery && matchesCategory
+  })
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Busca */}
+
       <Input
         placeholder="Buscar exercício..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
 
-      {/* Tabs de categoria */}
-      <Tabs value={category} onValueChange={setCategory}>
-        <TabsList className="flex-wrap">
-          {categories.map((c) => (
-            <TabsTrigger key={c.id} value={c.id}>
-              {c.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      {/* Lista */}
-      <div className="grid grid-cols-1 gap-3 mt-2">
-        {filtered.map((ex) => (
-          <ExerciseCard
-            key={ex.id}
-            name={ex.name}
-            category={ex.category}
-            selected={selected.includes(ex.id)}
-            onClick={() => onToggle(ex.id)}
-          />
+      {/* CATEGORIES */}
+      <div className="flex gap-2 flex-wrap">
+        {categories.map((c) => (
+          <button
+            key={c.key}
+            onClick={() => setActiveCategory(c.key)}
+            className={`px-3 py-1 rounded-full border text-sm ${
+              activeCategory === c.key
+                ? "bg-purple-600 text-white border-purple-600"
+                : "border-muted-foreground text-muted-foreground"
+            }`}
+          >
+            {c.label}
+          </button>
         ))}
       </div>
+
+      <div className="flex flex-col gap-2 max-h-[260px] overflow-y-auto pr-2">
+        {filtered.map((ex) => {
+          const isSelected = selected.includes(ex.id)
+
+          return (
+            <button
+              key={ex.id}
+              onClick={() => onToggle(ex.id)}
+              className={`flex justify-between items-center p-3 rounded-lg border ${
+                isSelected ? "bg-purple-600 text-white" : "bg-card"
+              }`}
+            >
+              {ex.name}
+            </button>
+          )
+        })}
+
+        {filtered.length === 0 && (
+          <p className="text-center text-sm text-muted-foreground py-3">
+            Nenhum exercício encontrado.
+          </p>
+        )}
+      </div>
+
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={() => setCreateOpen(true)}
+      >
+        Criar novo exercício
+      </Button>
+
+      {createOpen && (
+        <CreateExerciseModal
+          onClose={() => setCreateOpen(false)}
+          onCreated={(ex) => {
+            onToggle(ex.id)
+            setCreateOpen(false)
+          }}
+        />
+      )}
     </div>
   )
 }
